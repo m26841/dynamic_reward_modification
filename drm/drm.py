@@ -12,7 +12,7 @@ from stable_baselines3.common.policies import BasePolicy
 from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
 from stable_baselines3.common.utils import get_parameters_by_name, polyak_update
 from stable_baselines3.td3.policies import CnnPolicy, MlpPolicy, MultiInputPolicy
-from policies import DRMPolicy
+from drm.policies import DRMPolicy
 
 SelfTD3 = TypeVar("SelfTD3", bound="TD3")
 
