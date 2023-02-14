@@ -15,7 +15,7 @@ from stable_baselines3.common.utils import set_random_seed
 import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
 from rl_zoo3.exp_manager import ExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict
-from drm import DRM
+from drm.drm import DRM
 
 
 def train() -> None:
