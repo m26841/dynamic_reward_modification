@@ -11,19 +11,18 @@ from stable_baselines3.common.off_policy_algorithm import OffPolicyAlgorithm
 from stable_baselines3.common.policies import BasePolicy
 from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
 from stable_baselines3.common.utils import get_parameters_by_name, polyak_update
-from stable_baselines3.td3.policies import CnnPolicy, MlpPolicy, MultiInputPolicy, TD3Policy
+from stable_baselines3.td3.policies import CnnPolicy, MlpPolicy, MultiInputPolicy
+from policies import DRMPolicy
 
 SelfTD3 = TypeVar("SelfTD3", bound="TD3")
 
 
-class TD3(OffPolicyAlgorithm):
+class DRM(OffPolicyAlgorithm):
     """
-    Twin Delayed DDPG (TD3)
+    Dynamic Reward Modification (DRM)
     Addressing Function Approximation Error in Actor-Critic Methods.
 
-    Original implementation: https://github.com/sfujim/TD3
-    Paper: https://arxiv.org/abs/1802.09477
-    Introduction to TD3: https://spinningup.openai.com/en/latest/algorithms/td3.html
+    Based on stable_baselines TD3 implementation.
 
     :param policy: The policy model to use (MlpPolicy, CnnPolicy, ...)
     :param env: The environment to learn from (if registered in Gym, can be str)
@@ -70,7 +69,7 @@ class TD3(OffPolicyAlgorithm):
 
     def __init__(
         self,
-        policy: Union[str, Type[TD3Policy]],
+        policy: Union[str, Type[DRMPolicy]],
         env: Union[GymEnv, str],
         learning_rate: Union[float, Schedule] = 1e-3,
         buffer_size: int = 1_000_000,  # 1e6

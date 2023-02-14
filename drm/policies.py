@@ -83,9 +83,9 @@ class Actor(BasePolicy):
         return self(observation)
 
 
-class TD3Policy(BasePolicy):
+class DRMPolicy(BasePolicy):
     """
-    Policy class (with both actor and critic) for TD3.
+    Policy class (with both actor and critic) for DRM.
 
     :param observation_space: Observation space
     :param action_space: Action space
@@ -118,7 +118,7 @@ class TD3Policy(BasePolicy):
         normalize_images: bool = True,
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
-        n_critics: int = 2,
+        n_critics: int = 10,
         share_features_extractor: bool = False,
     ):
         super().__init__(
@@ -243,10 +243,10 @@ class TD3Policy(BasePolicy):
         self.training = mode
 
 
-MlpPolicy = TD3Policy
+MlpPolicy = DRMPolicy
 
 
-class CnnPolicy(TD3Policy):
+class CnnPolicy(DRMPolicy):
     """
     Policy class (with both actor and critic) for TD3.
 
@@ -260,11 +260,7 @@ class CnnPolicy(TD3Policy):
         to pass to the features extractor.
     :param normalize_images: Whether to normalize images or not,
          dividing by 255.0 (True by default)
-    :param optimizer_class: The optimizer to use,
-        ``th.optim.Adam`` by default
-    :param optimizer_kwargs: Additional keyword arguments,
-        excluding the learning rate, to pass to the optimizer
-    :param n_critics: Number of critic networks to create.
+    :param optimizer_class: The optimizer to use,TD3 create.
     :param share_features_extractor: Whether to share or not the features extractor
         between the actor and the critic (this saves computation time)
     """
@@ -281,7 +277,7 @@ class CnnPolicy(TD3Policy):
         normalize_images: bool = True,
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
-        n_critics: int = 2,
+        n_critics: int = 10,
         share_features_extractor: bool = False,
     ):
         super().__init__(
@@ -300,9 +296,9 @@ class CnnPolicy(TD3Policy):
         )
 
 
-class MultiInputPolicy(TD3Policy):
+class MultiInputPolicy(DRMPolicy):
     """
-    Policy class (with both actor and critic) for TD3 to be used with Dict observation spaces.
+    Policy class (with both actor and critic) for DRM to be used with Dict observation spaces.
 
     :param observation_space: Observation space
     :param action_space: Action space
@@ -335,7 +331,7 @@ class MultiInputPolicy(TD3Policy):
         normalize_images: bool = True,
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
-        n_critics: int = 2,
+        n_critics: int = 10,
         share_features_extractor: bool = False,
     ):
         super().__init__(
