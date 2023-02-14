@@ -15,23 +15,17 @@ from stable_baselines3.common.utils import set_random_seed
 import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
 from rl_zoo3.exp_manager import ExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict
+from drm import DRM
 
 
 def train() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
     parser.add_argument("--env", type=str, default="CartPole-v1", help="environment ID")
     parser.add_argument("-tb", "--tensorboard-log", help="Tensorboard log dir", default="", type=str)
     parser.add_argument("-i", "--trained-agent", help="Path to a pretrained agent to continue training", default="", type=str)
-    parser.add_argument(
-        "--truncate-last-trajectory",
-        help="When using HER with online sampling the last trajectory "
-        "in the replay buffer will be truncated after reloading the replay buffer.",
-        default=True,
-        type=bool,
-    )
     parser.add_argument("-n", "--n-timesteps", help="Overwrite the number of timesteps", default=-1, type=int)
     parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
+    parser.add_argument("--")
     parser.add_argument("--log-interval", help="Override log interval (default: -1, no change)", default=-1, type=int)
     parser.add_argument(
         "--eval-freq",
@@ -225,7 +219,7 @@ def train() -> None:
 
     exp_manager = ExperimentManager(
         args,
-        args.algo,
+        DRM(n_critics=10),
         env_id,
         args.log_folder,
         args.tensorboard_log,

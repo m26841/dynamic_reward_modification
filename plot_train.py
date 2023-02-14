@@ -13,7 +13,6 @@ from stable_baselines3.common.results_plotter import X_EPISODES, X_TIMESTEPS, X_
 # Activate seaborn
 seaborn.set()
 
-
 def plot_train():
     parser = argparse.ArgumentParser("Gather results, plot training reward/success")
     parser.add_argument("-a", "--algo", help="Algorithm to include", type=str, required=True)
