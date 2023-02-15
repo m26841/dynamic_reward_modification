@@ -13,7 +13,7 @@ from stable_baselines3.common.utils import set_random_seed
 
 # Register custom envs
 import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
-from rl_zoo3.exp_manager import ExperimentManager
+from flexible_exp_manager import FlexibleExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict
 from drm.drm import DRM
 from drm.policies import DRMPolicy
@@ -218,9 +218,14 @@ def train() -> None:
         )
         args.tensorboard_log = f"runs/{run_name}"
 
-    exp_manager = ExperimentManager(
+    #Create new algorithm list which includes DRM
+    FULL_ALGO_LIST = ALGOS
+    FULL_ALGO_LIST["drm"] = DRM()
+
+    exp_manager = FlexibleExperimentManager(
         args,
-        DRM(env=env_id,policy=DRMPolicy(n_critics=args.n_critics)),
+        "drm",
+        FULL_ALGO_LIST,
         env_id,
         args.log_folder,
         args.tensorboard_log,
