@@ -220,7 +220,7 @@ def train() -> None:
 
     #Create new algorithm list which includes DRM
     FULL_ALGO_LIST = ALGOS
-    FULL_ALGO_LIST["drm"] = DRM()
+    FULL_ALGO_LIST["drm"] = DRM
 
     exp_manager = FlexibleExperimentManager(
         args,
