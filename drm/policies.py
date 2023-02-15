@@ -163,7 +163,6 @@ class DRMPolicy(BasePolicy):
         self.actor, self.actor_target = None, None
         self.critic, self.critic_target = None, None
         self.share_features_extractor = share_features_extractor
-        print(f"DRMPolicy with ncritics {n_critics}")
         self._build(lr_schedule)
 
     def _build(self, lr_schedule: Schedule) -> None:

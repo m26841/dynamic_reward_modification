@@ -162,9 +162,17 @@ class DRM(OffPolicyAlgorithm):
                 noise = noise.clamp(-self.target_noise_clip, self.target_noise_clip)
                 next_actions = (self.actor_target(replay_data.next_observations) + noise).clamp(-1, 1)
 
-                # Compute the next Q-values: min over all critics targets
-                next_q_values = th.cat(self.critic_target(replay_data.next_observations, next_actions), dim=1)
+                m = 2
+                critic_indices_to_use = np.random.choice(self.critic.n_critics, m, replace=False)
                 
+                # Compute the next Q-values: min over a random selection of m of the critics.
+                next_q_values = []
+                for critic_index in critic_indices_to_use:
+                    features = self.critic_target.extract_features(replay_data.next_observations, self.critic_target.features_extractor)
+                    next_q_values.append(self.critic_target.q_networks[critic_index](th.cat([features, next_actions], dim=1)))
+                    
+                next_q_values = th.cat(next_q_values, dim=1) #change tuple to single tensor
+
                 next_q_values, _ = th.min(next_q_values, dim=1, keepdim=True)
                 shaped_rewards = replay_data.rewards + self.get_q_variance(next_q_values)*calc_shaped_rewards(replay_data.observations)
                 target_q_values = shaped_rewards + (1 - replay_data.dones) * self.gamma * next_q_values

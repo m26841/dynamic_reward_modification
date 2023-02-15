@@ -104,7 +104,6 @@ class FlexibleExperimentManager(ExperimentManager):
             show_progress)
         self.FULL_ALGO_LIST = FULL_ALGO_LIST
         self.policy_kwargs = policy_kwargs
-        print(f"SELF POLICYK {self.policy_kwargs}")
 
 
     def setup_experiment(self) -> Optional[Tuple[BaseAlgorithm, Dict[str, Any]]]:
