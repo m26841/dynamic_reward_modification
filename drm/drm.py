@@ -92,7 +92,6 @@ class DRM(OffPolicyAlgorithm):
         seed: Optional[int] = None,
         device: Union[th.device, str] = "auto",
         _init_setup_model: bool = True,
-        n_critics = 10,
     ):
         super().__init__(
             policy,

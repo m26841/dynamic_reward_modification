@@ -16,6 +16,7 @@ import rl_zoo3.import_envs  # noqa: F401 pytype: disable=import-error
 from rl_zoo3.exp_manager import ExperimentManager
 from rl_zoo3.utils import ALGOS, StoreDict
 from drm.drm import DRM
+from drm.policies import DRMPolicy
 
 
 def train() -> None:
@@ -24,6 +25,7 @@ def train() -> None:
     parser.add_argument("-tb", "--tensorboard-log", help="Tensorboard log dir", default="", type=str)
     parser.add_argument("-i", "--trained-agent", help="Path to a pretrained agent to continue training", default="", type=str)
     parser.add_argument("-n", "--n-timesteps", help="Overwrite the number of timesteps", default=-1, type=int)
+    parser.add_argument("--n_critics",help="Number of critics in ensemble", default=10, type=int)
     parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
     parser.add_argument("--log-interval", help="Override log interval (default: -1, no change)", default=-1, type=int)
     parser.add_argument(
@@ -218,7 +220,7 @@ def train() -> None:
 
     exp_manager = ExperimentManager(
         args,
-        DRM(n_critics=10),
+        DRM(env=env_id,policy=DRMPolicy(n_critics=args.n_critics)),
         env_id,
         args.log_folder,
         args.tensorboard_log,
