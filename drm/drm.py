@@ -11,11 +11,11 @@ from stable_baselines3.common.off_policy_algorithm import OffPolicyAlgorithm
 from stable_baselines3.common.policies import BasePolicy
 from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
 from stable_baselines3.common.utils import get_parameters_by_name, polyak_update
-from stable_baselines3.td3.policies import CnnPolicy, MlpPolicy, MultiInputPolicy
-from drm.policies import DRMPolicy
+from drm.policies import DRMPolicy, CnnPolicy, MlpPolicy, MultiInputPolicy
 
-SelfTD3 = TypeVar("SelfTD3", bound="TD3")
+from lunar_lander_reward_shaping import calc_shaped_rewards
 
+SelfDRM = TypeVar("SelfDRM", bound="DRM")
 
 class DRM(OffPolicyAlgorithm):
     """
@@ -140,6 +140,9 @@ class DRM(OffPolicyAlgorithm):
         self.critic = self.policy.critic
         self.critic_target = self.policy.critic_target
 
+    def get_q_variance(self, q_values):
+        return 0
+
     def train(self, gradient_steps: int, batch_size: int = 100) -> None:
         # Switch to train mode (this affects batch norm / dropout)
         self.policy.set_training_mode(True)
@@ -161,8 +164,9 @@ class DRM(OffPolicyAlgorithm):
 
                 # Compute the next Q-values: min over all critics targets
                 next_q_values = th.cat(self.critic_target(replay_data.next_observations, next_actions), dim=1)
+                
                 next_q_values, _ = th.min(next_q_values, dim=1, keepdim=True)
-                shaped_rewards = replay_data.rewards + get_q_variance*calc_shaped_rewards(replay_data.observations)
+                shaped_rewards = replay_data.rewards + self.get_q_variance(next_q_values)*calc_shaped_rewards(replay_data.observations)
                 target_q_values = shaped_rewards + (1 - replay_data.dones) * self.gamma * next_q_values
 
             # Get current Q-values estimates for each critic network
@@ -201,14 +205,14 @@ class DRM(OffPolicyAlgorithm):
         self.logger.record("train/critic_loss", np.mean(critic_losses))
 
     def learn(
-        self: SelfTD3,
+        self: SelfDRM,
         total_timesteps: int,
         callback: MaybeCallback = None,
         log_interval: int = 4,
-        tb_log_name: str = "TD3",
+        tb_log_name: str = "DRM",
         reset_num_timesteps: bool = True,
         progress_bar: bool = False,
-    ) -> SelfTD3:
+    ) -> SelfDRM:
         return super().learn(
             total_timesteps=total_timesteps,
             callback=callback,

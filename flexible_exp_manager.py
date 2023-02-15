@@ -65,9 +65,46 @@ class FlexibleExperimentManager(ExperimentManager):
         device: Union[th.device, str] = "auto",
         config: Optional[str] = None,
         show_progress: bool = False,
+        policy_kwargs: Optional[Dict[str, Any]] = None,
     ):
-        super().__init__()
+        super().__init__(args,
+            algo,
+            env_id,
+            log_folder,
+            tensorboard_log,
+            n_timesteps,
+            eval_freq,
+            n_eval_episodes,
+            save_freq,
+            hyperparams,
+            env_kwargs,
+            trained_agent,
+            optimize_hyperparameters,
+            storage,
+            study_name,
+            n_trials,
+            max_total_trials,
+            n_jobs,
+            sampler,
+            pruner,
+            optimization_log_path,
+            n_startup_trials,
+            n_evaluations,
+            truncate_last_trajectory,
+            uuid_str,
+            seed,
+            log_interval,
+            save_replay_buffer,
+            verbose,
+            vec_env_type,
+            n_eval_envs,
+            no_optim_plots,
+            device,
+            config,
+            show_progress)
         self.FULL_ALGO_LIST = FULL_ALGO_LIST
+        self.policy_kwargs = policy_kwargs
+        print(f"SELF POLICYK {self.policy_kwargs}")
 
 
     def setup_experiment(self) -> Optional[Tuple[BaseAlgorithm, Dict[str, Any]]]:
@@ -95,6 +132,11 @@ class FlexibleExperimentManager(ExperimentManager):
             env.close()
             return None
         else:
+            #Merge policy_kwargs classified as hyperparameters, and those not classified as hyperparameters
+            if "policy_kwargs" in hyperparams.keys():
+                policy_kwargs = {**hyperparams["policy_kwargs"], **self.policy_kwargs}
+                del hyperparams["policy_kwargs"]
+
             # Train an agent from scratch
             model = self.FULL_ALGO_LIST[self.algo](
                 env=env,
@@ -102,6 +144,7 @@ class FlexibleExperimentManager(ExperimentManager):
                 seed=self.seed,
                 verbose=self.verbose,
                 device=self.device,
+                policy_kwargs=policy_kwargs,
                 **self._hyperparams,
             )
 
@@ -166,6 +209,7 @@ class FlexibleExperimentManager(ExperimentManager):
             seed=None,
             verbose=trial_verbosity,
             device=self.device,
+            policy_kwargs=self.policy_kwargs, #?? do we need or want this?
             **kwargs,
         )
 

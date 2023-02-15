@@ -111,6 +111,7 @@ class DRMPolicy(BasePolicy):
         observation_space: spaces.Space,
         action_space: spaces.Space,
         lr_schedule: Schedule,
+        n_critics: int = 10,
         net_arch: Optional[Union[List[int], Dict[str, List[int]]]] = None,
         activation_fn: Type[nn.Module] = nn.ReLU,
         features_extractor_class: Type[BaseFeaturesExtractor] = FlattenExtractor,
@@ -118,7 +119,6 @@ class DRMPolicy(BasePolicy):
         normalize_images: bool = True,
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
-        n_critics: int = 10,
         share_features_extractor: bool = False,
     ):
         super().__init__(
@@ -163,7 +163,7 @@ class DRMPolicy(BasePolicy):
         self.actor, self.actor_target = None, None
         self.critic, self.critic_target = None, None
         self.share_features_extractor = share_features_extractor
-
+        print(f"DRMPolicy with ncritics {n_critics}")
         self._build(lr_schedule)
 
     def _build(self, lr_schedule: Schedule) -> None:

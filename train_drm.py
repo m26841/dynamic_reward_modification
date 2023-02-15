@@ -21,11 +21,19 @@ from drm.policies import DRMPolicy
 
 def train() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--n_critics",help="Number of critics in ensemble", default=10, type=int)
+    parser.add_argument("--algo", help="RL Algorithm", default="ppo", type=str, required=False, choices=list(ALGOS.keys()))
     parser.add_argument("--env", type=str, default="CartPole-v1", help="environment ID")
     parser.add_argument("-tb", "--tensorboard-log", help="Tensorboard log dir", default="", type=str)
     parser.add_argument("-i", "--trained-agent", help="Path to a pretrained agent to continue training", default="", type=str)
+    parser.add_argument(
+        "--truncate-last-trajectory",
+        help="When using HER with online sampling the last trajectory "
+        "in the replay buffer will be truncated after reloading the replay buffer.",
+        default=True,
+        type=bool,
+    )
     parser.add_argument("-n", "--n-timesteps", help="Overwrite the number of timesteps", default=-1, type=int)
-    parser.add_argument("--n_critics",help="Number of critics in ensemble", default=10, type=int)
     parser.add_argument("--num-threads", help="Number of threads for PyTorch (-1 to use default)", default=-1, type=int)
     parser.add_argument("--log-interval", help="Override log interval (default: -1, no change)", default=-1, type=int)
     parser.add_argument(
@@ -222,6 +230,10 @@ def train() -> None:
     FULL_ALGO_LIST = ALGOS
     FULL_ALGO_LIST["drm"] = DRM
 
+    #initialize policy kwargs with n_critics
+    policy_kwargs = {}
+    policy_kwargs['n_critics'] = args.n_critics
+
     exp_manager = FlexibleExperimentManager(
         args,
         "drm",
@@ -259,6 +271,7 @@ def train() -> None:
         device=args.device,
         config=args.conf_file,
         show_progress=args.progress,
+        policy_kwargs=policy_kwargs,
     )
 
     # Prepare experiment and launch hyperparameter optimization if needed
@@ -277,7 +290,6 @@ def train() -> None:
             exp_manager.save_trained_model(model)
     else:
         exp_manager.hyperparameters_optimization()
-
 
 if __name__ == "__main__":
     train()
